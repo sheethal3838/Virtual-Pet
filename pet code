@@ -1,0 +1,103 @@
+import tkinter as tk
+from tkinter import messagebox
+import time
+import random
+
+class Pet:
+    def __init__(self, name):
+        self.name = name
+        self.hunger = 5    # 1 (hungry) to 10 (full)
+        self.happiness = 5  # 1 (sad) to 10 (happy)
+        self.health = 10    # 1 (sick) to 10 (healthy)
+    
+    def feed(self):
+        if self.hunger < 10:
+            self.hunger += 2
+            return f"{self.name} is eating... Hunger level: {self.hunger}"
+        else:
+            return f"{self.name} is already full!"
+    
+    def play(self):
+        if self.happiness < 10:
+            self.happiness += 2
+            return f"You're playing with {self.name}... Happiness level: {self.happiness}"
+        else:
+            return f"{self.name} is already very happy!"
+    
+    def sleep(self):
+        self.hunger -= 2  # Sleep makes pet hungry
+        return f"{self.name} is sleeping... Hunger level: {self.hunger}"
+
+    def check_status(self):
+        return f"--- {self.name}'s Status ---\nHunger: {self.hunger}/10\nHappiness: {self.happiness}/10\nHealth: {self.health}/10"
+
+# Create the main application window
+class PetApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Virtual Pet Bot")
+
+        # Create a new Pet
+        self.pet_name = tk.StringVar()
+        self.pet = None
+
+        # UI for Pet Name
+        tk.Label(root, text="Enter Pet's Name:").pack(pady=10)
+        self.name_entry = tk.Entry(root, textvariable=self.pet_name)
+        self.name_entry.pack(pady=10)
+        self.start_button = tk.Button(root, text="Create Pet", command=self.create_pet)
+        self.start_button.pack(pady=10)
+
+        # Frame to hold the pet actions
+        self.actions_frame = tk.Frame(root)
+        self.actions_frame.pack(pady=20)
+
+        # Buttons for actions (hidden until pet is created)
+        self.feed_button = tk.Button(self.actions_frame, text="Feed", command=self.feed_pet)
+        self.play_button = tk.Button(self.actions_frame, text="Play", command=self.play_with_pet)
+        self.sleep_button = tk.Button(self.actions_frame, text="Sleep", command=self.pet_sleep)
+        self.status_button = tk.Button(self.actions_frame, text="Check Status", command=self.check_status)
+
+        # Status Label to display information
+        self.status_label = tk.Label(root, text="")
+        self.status_label.pack(pady=20)
+
+    def create_pet(self):
+        name = self.pet_name.get()
+        if name:
+            self.pet = Pet(name)
+            messagebox.showinfo("Pet Created", f"{name} is your new pet!")
+            self.show_pet_actions()
+        else:
+            messagebox.showwarning("Input Error", "Please enter a pet name.")
+
+    def show_pet_actions(self):
+        # Display the action buttons once the pet is created
+        self.feed_button.pack(side="left", padx=5)
+        self.play_button.pack(side="left", padx=5)
+        self.sleep_button.pack(side="left", padx=5)
+        self.status_button.pack(side="left", padx=5)
+
+    def feed_pet(self):
+        result = self.pet.feed()
+        self.update_status(result)
+
+    def play_with_pet(self):
+        result = self.pet.play()
+        self.update_status(result)
+
+    def pet_sleep(self):
+        result = self.pet.sleep()
+        self.update_status(result)
+
+    def check_status(self):
+        result = self.pet.check_status()
+        self.update_status(result)
+
+    def update_status(self, message):
+        self.status_label.config(text=message)
+
+# Initialize Tkinter and run the app
+root = tk.Tk()
+app = PetApp(root)
+root.mainloop()
